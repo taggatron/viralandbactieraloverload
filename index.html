@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How Bacteria & Viruses Cause Disease (GCSE Simulation)</title>
+  <meta name="description" content="Interactive GCSE-level simulations showing bacterial toxin production and viral hijacking." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <h1>How Bacteria & Viruses Cause Disease</h1>
+          <p class="subtitle">GCSE-level interactive simulation: toxins vs hijacking</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btnPause" class="btn btn-secondary" type="button">Pause</button>
+        <button id="btnReset" class="btn" type="button">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="intro card">
+      <h2>What you’re about to see</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Bacteria (living cells)</h3>
+          <ul>
+            <li>They reproduce on their own.</li>
+            <li>Some make <strong>toxins</strong> that damage tissues and cause symptoms.</li>
+            <li>In the simulation: toxins reduce “cell health”.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Viruses (not cells)</h3>
+          <ul>
+            <li>They must get inside a cell to reproduce.</li>
+            <li>They <strong>hijack</strong> the cell’s machinery to make more viruses.</li>
+            <li>In the simulation: viral load rises until the cell bursts.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">These are simplified models to explain core ideas (GCSE). Real infections are more complex.</p>
+    </section>
+
+    <section class="tabs" aria-label="Choose simulation">
+      <button id="tabBacteria" class="tab tab-active" type="button" aria-selected="true">Bacteria: Toxins</button>
+      <button id="tabVirus" class="tab" type="button" aria-selected="false">Virus: Hijacking</button>
+    </section>
+
+    <section class="sim card">
+      <div class="sim-top">
+        <div>
+          <h2 id="simTitle">Bacteria: toxin production</h2>
+          <p id="simExplain" class="muted">
+            Bacteria can release toxins. Toxins can damage cells and trigger symptoms (e.g., inflammation, diarrhoea, fever).
+            In this model, toxin particles spread and reduce the “cell health” bar.
+          </p>
+        </div>
+        <div class="meters">
+          <div class="meter">
+            <div class="meter-label">
+              <span>Cell health</span>
+              <span id="cellHealthText" class="meter-value">100%</span>
+            </div>
+            <div class="meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+              <div id="cellHealthBar" class="meter-fill"></div>
+            </div>
+          </div>
+          <div class="meter">
+            <div class="meter-label">
+              <span id="pressureLabel">Toxin level</span>
+              <span id="pressureText" class="meter-value">Low</span>
+            </div>
+            <div class="meter-track meter-track-alt" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div id="pressureBar" class="meter-fill meter-fill-alt"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-body">
+        <div class="canvas-wrap" aria-label="Simulation view">
+          <canvas id="simCanvas" width="980" height="520"></canvas>
+          <div class="canvas-overlay">
+            <div class="legend">
+              <span class="dot dot-bacteria"></span><span id="legend1">Bacteria</span>
+              <span class="dot dot-toxin"></span><span id="legend2">Toxin</span>
+              <span class="dot dot-virus"></span><span id="legend3" class="hidden">Virus</span>
+            </div>
+            <div class="hint" id="hintText">Tip: raise “toxin production” to see symptoms happen faster.</div>
+          </div>
+        </div>
+
+        <aside class="controls" aria-label="Simulation controls">
+          <h3>Controls</h3>
+
+          <div class="control">
+            <label for="speed">Speed</label>
+            <input id="speed" type="range" min="0.5" max="2.5" step="0.1" value="1" />
+            <div class="control-help"><span id="speedText">1.0×</span></div>
+          </div>
+
+          <div id="controlsBacteria">
+            <div class="control">
+              <label for="bacteriaCount">Starting bacteria</label>
+              <input id="bacteriaCount" type="range" min="3" max="25" step="1" value="10" />
+              <div class="control-help"><span id="bacteriaCountText">10</span></div>
+            </div>
+
+            <div class="control">
+              <label for="bacteriaGrow">Bacteria reproduction</label>
+              <input id="bacteriaGrow" type="range" min="0" max="100" step="1" value="40" />
+              <div class="control-help"><span id="bacteriaGrowText">40</span> (higher = more bacteria)</div>
+            </div>
+
+            <div class="control">
+              <label for="toxinRate">Toxin production</label>
+              <input id="toxinRate" type="range" min="0" max="100" step="1" value="55" />
+              <div class="control-help"><span id="toxinRateText">55</span> (higher = more toxin particles)</div>
+            </div>
+
+            <div class="control">
+              <label for="immune">Immune response</label>
+              <input id="immune" type="range" min="0" max="100" step="1" value="35" />
+              <div class="control-help"><span id="immuneText">35</span> (higher = removes bacteria/toxins faster)</div>
+            </div>
+          </div>
+
+          <div id="controlsVirus" class="hidden">
+            <div class="control">
+              <label for="virusDose">Virus dose (starting viruses)</label>
+              <input id="virusDose" type="range" min="1" max="40" step="1" value="12" />
+              <div class="control-help"><span id="virusDoseText">12</span></div>
+            </div>
+
+            <div class="control">
+              <label for="attachment">Attachment chance</label>
+              <input id="attachment" type="range" min="0" max="100" step="1" value="55" />
+              <div class="control-help"><span id="attachmentText">55</span> (higher = infection starts sooner)</div>
+            </div>
+
+            <div class="control">
+              <label for="replication">Replication speed</label>
+              <input id="replication" type="range" min="0" max="100" step="1" value="60" />
+              <div class="control-help"><span id="replicationText">60</span> (higher = viral load rises faster)</div>
+            </div>
+
+            <div class="control">
+              <label for="antiviral">Immune/antiviral effect</label>
+              <input id="antiviral" type="range" min="0" max="100" step="1" value="30" />
+              <div class="control-help"><span id="antiviralText">30</span> (higher = clears viruses faster)</div>
+            </div>
+          </div>
+
+          <div class="callouts">
+            <div class="callout" id="calloutTop">
+              <strong>Key idea</strong>
+              <p id="keyIdea">Toxins are chemicals released by bacteria that damage cells.</p>
+            </div>
+            <div class="callout callout-alt" id="calloutBottom">
+              <strong>Exam language</strong>
+              <p id="examLine">Bacteria can produce toxins that damage tissues and cause symptoms.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="sim-footer">
+        <div class="pill" id="statusPill" role="status">Running</div>
+        <div class="footer-text" id="footerText">
+          In real life, antibiotics can treat <em>bacterial</em> infections, but they do not work on <em>viruses</em>.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Try these GCSE questions</h2>
+      <ol>
+        <li>Why can bacteria reproduce without entering your cells?</li>
+        <li>What does “toxin” mean and how can it cause symptoms?</li>
+        <li>Why do viruses need a host cell to reproduce?</li>
+        <li>Explain what is meant by “viral hijacking”.</li>
+      </ol>
+    </section>
+
+    <footer class="site-footer">
+      <p>
+        Built as a simple static site for GitHub Pages.
+        <a href="https://github.com/" target="_blank" rel="noreferrer">Host it on GitHub</a>.
+      </p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
